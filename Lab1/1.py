@@ -23,6 +23,7 @@ def get_curency_course(curency: str = 'USD', start_url_string: str = 'https://ww
     функция получает курс заданной валюты на момент конкретной даты
     и записывает в файл до тех пор, пока не дойдёт до последней возможной даты
     curency - валюта, для которой получаем курс
+    start_url_string - стартовая ссылка, с которой начинаем парсить
     """
     response = requests.get(start_url_string)
     url_text = json.loads(response.text)
