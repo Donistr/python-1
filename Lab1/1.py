@@ -4,7 +4,7 @@ import csv
 import logging
 
 
-def write_string_to_csv(data_string: str, file_name = "res_file.csv") -> None:
+def write_string_to_csv(data_string: str, file_name: str = "res_file.csv") -> None:
     """
         функция дописывает в конец csv файла строку data_string
         data_string - строка, которую записываем
@@ -18,7 +18,8 @@ def write_string_to_csv(data_string: str, file_name = "res_file.csv") -> None:
         logging.error(f'Ошибка, не удалось открыть файл: {error}')
 
 
-def get_curency_course(curency: str = 'USD', start_url_string: str = 'https://www.cbr-xml-daily.ru/daily_json.js') -> None:
+def get_curency_course(curency: str = 'USD', start_url_string: str = 'https://www.cbr-xml-daily.ru/daily_json.js') \
+        -> None:
     """
     функция получает курс заданной валюты на момент конкретной даты
     и записывает в файл до тех пор, пока не дойдёт до последней возможной даты
