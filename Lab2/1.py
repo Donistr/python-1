@@ -1,0 +1,51 @@
+import csv
+import logging
+
+
+def write_string_to_csv(data_string: str, file_name: str = 'res_file.csv') -> None:
+    """
+        функция дописывает в конец csv файла строку data_string
+        data_string - строка, которую записываем
+        file_name - название файла, в который записываем
+    """
+    try:
+        with open(file_name, 'a', newline='') as file:
+            writer = csv.writer(file)
+            writer.writerow({data_string})
+    except OSError as error:
+        logging.error(f'Ошибка, не удалось открыть файл: {error}')
+
+
+def read_file(file_name: str = 'data_file.csv') -> list:
+    """
+    функция считывает данные из csv файла
+    file_name - название файла, из которого считываем
+    """
+    try:
+        with open(file_name, newline='') as file:
+            reader = csv.reader(file)
+            data = list()
+            for row in reader:
+                data.append(row)
+            return data
+    except OSError as error:
+        logging.error(f'Ошибка, не удалось открыть файл: {error}')
+
+
+def partition_data_two_files(data_file_name: str = 'data_file.csv', file_name_1: str = 'X.csv',
+                             file_name_2: str = 'Y.csv') -> None:
+    """
+    функция разделяет исходный массив данных на 2 файла: в 1 даты, в другом данные
+    data_file_name - название файла с данными
+    file_name_1 - название файла, в который запишутся все даты
+    file_name_2 - название файла, в который запишутся все данные
+    """
+    data_list = read_file(data_file_name)
+    for item in data_list:
+        tmp_array = item[0].split(', ')
+        write_string_to_csv(tmp_array[0], file_name_1)
+        write_string_to_csv(tmp_array[1], file_name_2)
+
+
+if __name__ == "__main__":
+    partition_data_two_files()
