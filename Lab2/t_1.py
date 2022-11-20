@@ -1,5 +1,7 @@
 import csv
 import logging
+import re
+import datetime
 
 
 def write_string_to_csv(data_string: str, file_name: str = 'res_file.csv') -> None:
@@ -26,7 +28,11 @@ def read_file(file_name: str = 'data_file.csv') -> list:
             reader = csv.reader(file)
             data = list()
             for row in reader:
-                data.append(row)
+                str_date = re.match('\d{4}-\d\d-\d\d', row[0]).group(0)
+                tmp_date = datetime.datetime.strptime(str_date, '%Y-%m-%d').date()
+                str_value = re.match('(?:\d*\.\d+|\d+)', row[0][12:]).group(0)
+                tmp_value = float(str_value)
+                data.append({'date': tmp_date, 'value': tmp_value})
             return data
     except OSError as error:
         logging.error(f'Ошибка, не удалось открыть файл: {error}')
@@ -42,9 +48,8 @@ def partition_data_two_files(data_file_name: str = 'data_file.csv', file_name_1:
     """
     data_list = read_file(data_file_name)
     for item in data_list:
-        tmp_array = item[0].split(', ')
-        write_string_to_csv(tmp_array[0], file_name_1)
-        write_string_to_csv(tmp_array[1], file_name_2)
+        write_string_to_csv(item['date'], file_name_1)
+        write_string_to_csv(item['value'], file_name_2)
 
 
 if __name__ == "__main__":

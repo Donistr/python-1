@@ -1,23 +1,9 @@
-import csv
-import logging
+from t_1 import read_file
 import datetime
 from os import listdir
-
-
-def read_file(file_name: str = 'data_file.csv') -> list:
-    """
-    функция считывает данные из csv файла
-    file_name - название файла, из которого считываем
-    """
-    try:
-        with open(file_name, newline='') as file:
-            reader = csv.reader(file)
-            data = list()
-            for row in reader:
-                data.append(row)
-            return data
-    except OSError as error:
-        logging.error(f'Ошибка, не удалось открыть файл: {error}')
+import csv
+import logging
+import re
 
 
 def get_value_from_0_type_file(required_date: datetime, data_file_name: str = 'data_file.csv') -> [float, None]:
@@ -31,17 +17,49 @@ def get_value_from_0_type_file(required_date: datetime, data_file_name: str = 'd
     array_date = list()
     array_val = list()
     for item in data_list:
-        tmp_array = item[0].split(', ')
-        tmp_date_array = tmp_array[0].split('-')
-        tmp_date = datetime.date(int(tmp_date_array[0]), int(tmp_date_array[1]), int(tmp_date_array[2]))
-        value = float(tmp_array[1])
-        array_date.append(tmp_date)
-        array_val.append(value)
+        array_date.append(item['date'])
+        array_val.append(item['value'])
     if required_date in array_date:
         required_index = array_date.index(required_date)
         return array_val[required_index]
     else:
         return None
+
+
+def read_date_file(file_name: str = 'data_file.csv') -> list:
+    """
+    функция считывает данные из csv файла
+    file_name - название файла, из которого считываем
+    """
+    try:
+        with open(file_name, newline='') as file:
+            reader = csv.reader(file)
+            data = list()
+            for row in reader:
+                str_date = re.match('\d{4}-\d\d-\d\d', row[0]).group(0)
+                tmp_date = datetime.datetime.strptime(str_date, '%Y-%m-%d').date()
+                data.append(tmp_date)
+            return data
+    except OSError as error:
+        logging.error(f'Ошибка, не удалось открыть файл: {error}')
+
+
+def read_value_file(file_name: str = 'data_file.csv') -> list:
+    """
+    функция считывает данные из csv файла
+    file_name - название файла, из которого считываем
+    """
+    try:
+        with open(file_name, newline='') as file:
+            reader = csv.reader(file)
+            data = list()
+            for row in reader:
+                str_value = re.match('(?:\d*\.\d+|\d+)', row[0]).group(0)
+                tmp_value = float(str_value)
+                data.append(tmp_value)
+            return data
+    except OSError as error:
+        logging.error(f'Ошибка, не удалось открыть файл: {error}')
 
 
 def get_value_from_1_type_file(required_date: datetime, data_file_name_1: str = 'X.csv',
@@ -53,19 +71,11 @@ def get_value_from_1_type_file(required_date: datetime, data_file_name_1: str = 
     data_file_name_1 - имя файла с датами
     data_file_name_2 - имя файла с данными
     """
-    data_list_x = read_file(data_file_name_1)
-    data_list_y = read_file(data_file_name_2)
-    array_date = list()
-    array_val = list()
-    for item in data_list_x:
-        tmp_date_array = item[0].split('-')
-        tmp_date = datetime.date(int(tmp_date_array[0]), int(tmp_date_array[1]), int(tmp_date_array[2]))
-        array_date.append(tmp_date)
-    for item in data_list_y:
-        array_val.append(float(item[0]))
-    if required_date in array_date:
-        required_index = array_date.index(required_date)
-        return array_val[required_index]
+    data_list_x = read_date_file(data_file_name_1)
+    data_list_y = read_value_file(data_file_name_2)
+    if required_date in data_list_x:
+        required_index = data_list_x.index(required_date)
+        return data_list_y[required_index]
     else:
         return None
 
@@ -88,11 +98,8 @@ def get_value_from_2_type_file(required_date: datetime) -> [float, None]:
                     file_name = item
                     data_list = read_file(file_name)
                     for obj in data_list:
-                        tmp_array = obj[0].split(', ')
-                        tmp_date_array = tmp_array[0].split('-')
-                        tmp_date = datetime.date(int(tmp_date_array[0]), int(tmp_date_array[1]), int(tmp_date_array[2]))
-                        if required_date == tmp_date:
-                            return float(tmp_array[1])
+                        if required_date == obj['date']:
+                            return obj['value']
     return None
 
 
@@ -114,39 +121,23 @@ def get_value_from_3_type_file(required_date: datetime) -> [float, None]:
                     file_name = item
                     data_list = read_file(file_name)
                     for obj in data_list:
-                        tmp_array = obj[0].split(', ')
-                        tmp_date_array = tmp_array[0].split('-')
-                        tmp_date = datetime.date(int(tmp_date_array[0]), int(tmp_date_array[1]), int(tmp_date_array[2]))
-                        if required_date == tmp_date:
-                            return float(tmp_array[1])
+                        if required_date == obj['date']:
+                            return obj['value']
     return None
 
 
-def next(data_file_name: str = 'data_file.csv') -> (datetime, float):
+def next(counter: int, data_file_name: str = 'data_file.csv') -> (datetime, float):
     """
     функция при первом вызове возвращает данные для самой ранней даты, при последующих вызовах возвращает данные для
     следующей по порядку даты, для которой есть данные
     data_file_name - название файла с данными
     """
     data_list = read_file(data_file_name)
-    tmp_array = data_list[-(1 + next.counter)][0].split(', ')
-    tmp_date_array = tmp_array[0].split('-')
-    tmp_date = datetime.date(int(tmp_date_array[0]), int(tmp_date_array[1]), int(tmp_date_array[2]))
-    value = float(tmp_array[1])
-    next.counter += 1
-    return tmp_date, value
-
-
-next.counter = 0
+    return data_list[-counter]['date'], data_list[-counter]['value']
 
 
 if __name__ == "__main__":
-    date_str = '2022-10-15'
-    tmp = date_str.split('-')
-    date = datetime.date(int(tmp[0]), int(tmp[1]), int(tmp[2]))
-    print(next())
-    print(next())
-    print(next())
+    date = datetime.date(2022, 10, 15)
     print(get_value_from_0_type_file(date))
     print(get_value_from_1_type_file(date))
     print(get_value_from_2_type_file(date))
