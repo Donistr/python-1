@@ -12,6 +12,9 @@ from t_4 import FunctionStateGetValue, get_value_from_basic_or_year_or_week_file
 
 
 class MainWindow(QMainWindow):
+    """
+    класс, реализующий графический интерфейс для работы с функциями второй лабораторной
+    """
 
     def __init__(self):
         super().__init__()
@@ -19,6 +22,10 @@ class MainWindow(QMainWindow):
         self.init_ui()
 
     def init_ui(self) -> None:
+        """
+        функция инициализирует графический интерфейс
+        :return: ничего не возвращает
+        """
         self.resize(1000, 500)
         self.center()
         self.setWindowTitle('Работа с датасетами 24/7')
@@ -68,6 +75,10 @@ class MainWindow(QMainWindow):
         self.show()
 
     def closeEvent(self, event) -> None:
+        """
+        функция спрашивает пользователь действительно ли он хочет выйти, когда он нажал на крестик
+        :return: ничего не возвращает
+        """
         reply = QMessageBox.question(self, 'Выход', 'Вы уверены, что хотите выйти?', QMessageBox.Yes | QMessageBox.No,
                                      QMessageBox.No)
         if reply == QMessageBox.Yes:
@@ -76,6 +87,10 @@ class MainWindow(QMainWindow):
             event.ignore()
 
     def center(self) -> None:
+        """
+        функция центрирует окно приложения на мониторе
+        :return: ничего не возвращает
+        """
         qr = self.frameGeometry()
         cp = QDesktopWidget().availableGeometry().center()
         qr.moveCenter(cp)
@@ -83,12 +98,24 @@ class MainWindow(QMainWindow):
 
     @staticmethod
     def create_button(v_box: QVBoxLayout, name: str, width: int, height: int) -> QPushButton:
+        """
+        функция создаёт кнопку
+        :param v_box: v-box в который добавится кнопка
+        :param name: текст кнопки
+        :param width: ширина кнопки
+        :param height: высота кнопки
+        :return: возвращает кнопку
+        """
         button = QPushButton(name)
         button.setFixedSize(QSize(width, height))
         v_box.addWidget(button)
         return button
 
     def create_annotation(self) -> None:
+        """
+        функция создаёт аннотацию исходного датасета(пользователь задаёт путь)
+        :return: ничего не возвращает
+        """
         dataset_path = QFileDialog.getExistingDirectory(self, 'Выберите папку с исходным датасетом')
         file_name = 'data_file.csv'
         dataset_path = f'{dataset_path}/{file_name}'
@@ -100,6 +127,10 @@ class MainWindow(QMainWindow):
             raise error
 
     def partition_data_two_files(self) -> None:
+        """
+        функция разделяет исходный датасет(пользователь задаёт путь) на два файла(пользователь задаёт путь)
+        :return: ничего не возвращает
+        """
         dataset_path = QFileDialog.getExistingDirectory(self, 'Выберите папку с исходным датасетом')
         dataset_file_name = 'data_file.csv'
         dataset_path = f'{dataset_path}/{dataset_file_name}'
@@ -110,6 +141,10 @@ class MainWindow(QMainWindow):
         partition_data_two_files(dataset_path, date_file, value_file)
 
     def partition_data_n_files_years(self) -> None:
+        """
+        функция разделяет исходный датасет(пользователь задаёт путь) на n файлов по годам(пользователь задаёт путь)
+        :return: ничего не возвращает
+        """
         dataset_path = QFileDialog.getExistingDirectory(self, 'Выберите папку с исходным датасетом')
         dataset_file_name = 'data_file.csv'
         dataset_path = f'{dataset_path}/{dataset_file_name}'
@@ -118,6 +153,10 @@ class MainWindow(QMainWindow):
         partition_data_n_files_years_or_weeks(FunctionStatePartition.partition_years, res_file_path, dataset_path)
 
     def partition_data_n_files_weeks(self) -> None:
+        """
+        функция разделяет исходный датасет(пользователь задаёт путь) на n файлов по неделям(пользователь задаёт путь)
+        :return: ничего не возвращает
+        """
         dataset_path = QFileDialog.getExistingDirectory(self, 'Выберите папку с исходным датасетом')
         dataset_file_name = 'data_file.csv'
         dataset_path = f'{dataset_path}/{dataset_file_name}'
@@ -127,6 +166,11 @@ class MainWindow(QMainWindow):
 
     @staticmethod
     def show_message(message: str) -> None:
+        """
+        функция показывает пользователю окно с текстом
+        :param message: отображаемый в окне текст
+        :return: ничего не возвращает
+        """
         msg = QMessageBox()
         msg.setFixedSize(400, 300)
         msg.setText(message)
@@ -135,6 +179,10 @@ class MainWindow(QMainWindow):
         msg.exec()
 
     def get_value_from_default_data(self) -> None:
+        """
+        функция ищет значение для даты(пользователь задаёт дату) в исходном датасете(пользователь задаёт путь)
+        :return: ничего не возвращает
+        """
         str_date = self.line_edit.text()
         if re.match('\d{4}-\d\d-\d\d', str_date) is None:
             self.show_message(f'Неверно задана дата')
@@ -148,6 +196,10 @@ class MainWindow(QMainWindow):
             self.show_message(f'Не удалось найти значение')
 
     def get_value_from_data_partitioned_two_files(self) -> None:
+        """
+        функция ищет значение для даты(пользователь задаёт дату) в датасете из двух файлов(пользователь задаёт путь)
+        :return: ничего не возвращает
+        """
         str_date = self.line_edit.text()
         if re.match('\d{4}-\d\d-\d\d', str_date) is None:
             self.show_message(f'Неверно задана дата')
@@ -164,6 +216,11 @@ class MainWindow(QMainWindow):
             self.show_message(f'Не удалось найти значение')
 
     def get_value_from_data_partitioned_n_files_years(self) -> None:
+        """
+        функция ищет значение для даты(пользователь задаёт дату) в датасете из n файлов по
+        годам(пользователь задаёт путь)
+        :return: ничего не возвращает
+        """
         str_date = self.line_edit.text()
         if re.match('\d{4}-\d\d-\d\d', str_date) is None:
             self.show_message(f'Неверно задана дата')
@@ -178,6 +235,11 @@ class MainWindow(QMainWindow):
             self.show_message(f'Не удалось найти значение')
 
     def get_value_from_data_partitioned_n_files_weeks(self) -> None:
+        """
+        функция ищет значение для даты(пользователь задаёт дату) в датасете из n файлов по
+        неделям(пользователь задаёт путь)
+        :return: ничего не возвращает
+        """
         str_date = self.line_edit.text()
         if re.match('\d{4}-\d\d-\d\d', str_date) is None:
             self.show_message(f'Неверно задана дата')
