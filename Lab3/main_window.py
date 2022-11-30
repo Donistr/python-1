@@ -222,6 +222,7 @@ class MainWindow(QMainWindow):
             date_file = f'{res_file_path}/X.csv'
             value_file = f'{res_file_path}/Y.csv'
             partition_data_two_files(dataset_path, date_file, value_file)
+            self.dataset_two_files_path.setText(res_file_path)
             self.show_message(f'Ура, всё получилось!')
         except OSError as error:
             self.show_message(f'Ой, что-то пошло не так! (Проверьте, указан ли путь к датасету)\nОшибка:{error}')
@@ -237,6 +238,7 @@ class MainWindow(QMainWindow):
             res_file_path = QFileDialog.getExistingDirectory(self, 'Выберите папку в которой будет создан датасет '
                                                                    'разделённый на n файлов по годам')
             partition_data_n_files_years_or_weeks(FunctionStatePartition.partition_years, res_file_path, dataset_path)
+            self.dataset_n_files_years_path.setText(res_file_path)
             self.show_message(f'Ура, всё получилось!')
         except OSError as error:
             self.show_message(f'Ой, что-то пошло не так! (Проверьте, указан ли путь к датасету)\nОшибка:{error}')
@@ -252,6 +254,7 @@ class MainWindow(QMainWindow):
             res_file_path = QFileDialog.getExistingDirectory(self, 'Выберите папку в которой будет создан датасет '
                                                                    'разделённый на n файлов по неделям')
             partition_data_n_files_years_or_weeks(FunctionStatePartition.partition_weeks, res_file_path, dataset_path)
+            self.dataset_n_files_weeks_path.setText(res_file_path)
             self.show_message(f'Ура, всё получилось!')
         except OSError as error:
             self.show_message(f'Ой, что-то пошло не так! (Проверьте, указан ли путь к датасету)\nОшибка:{error}')
