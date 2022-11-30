@@ -1,5 +1,4 @@
 import csv
-import logging
 import re
 import datetime
 
@@ -15,7 +14,7 @@ def write_string_to_csv(data_string: str, file_name: str = 'res_file.csv') -> No
             writer = csv.writer(file)
             writer.writerow({data_string})
     except OSError as error:
-        logging.error(f'Ошибка, не удалось открыть файл: {error}')
+        raise error
 
 
 def read_file(file_name: str = 'data_file.csv') -> list:
@@ -35,7 +34,7 @@ def read_file(file_name: str = 'data_file.csv') -> list:
                 data.append({'date': tmp_date, 'value': tmp_value})
             return data
     except OSError as error:
-        logging.error(f'Ошибка, не удалось открыть файл: {error}')
+        raise error
 
 
 def partition_data_two_files(data_file_name: str = 'data_file.csv', file_name_1: str = 'X.csv',
@@ -46,7 +45,10 @@ def partition_data_two_files(data_file_name: str = 'data_file.csv', file_name_1:
     file_name_1 - название файла, в который запишутся все даты(или путь)
     file_name_2 - название файла, в который запишутся все данные(или путь)
     """
-    data_list = read_file(data_file_name)
-    for item in data_list:
-        write_string_to_csv(item['date'], file_name_1)
-        write_string_to_csv(item['value'], file_name_2)
+    try:
+        data_list = read_file(data_file_name)
+        for item in data_list:
+            write_string_to_csv(item['date'], file_name_1)
+            write_string_to_csv(item['value'], file_name_2)
+    except OSError as error:
+        raise error

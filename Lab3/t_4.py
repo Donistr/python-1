@@ -2,7 +2,6 @@ from t_1 import read_file
 import datetime
 from os import listdir
 import csv
-import logging
 import re
 import enum
 
@@ -25,32 +24,35 @@ def get_value_from_basic_or_year_or_week_file(required_date: datetime, type_file
     path - путь к папке с файлами
     data_file_0_type_name - название исходного файла
     """
-    file_name = ''
-    if type_file == FunctionStateGetValue.basic_file:
-        file_name = f'{path}/{data_file_0_type_name}'
-    else:
-        if type_file == FunctionStateGetValue.year_file or type_file == FunctionStateGetValue.week_file:
-            file_names = listdir(path)
-            for item in file_names:
-                if '.csv' in item:
-                    if f'{required_date.year}' in item:
-                        date_1_str = item.split('_')[0]
-                        date_2_str = item.split('_')[1].split('.')[0]
-                        date_1 = datetime.date(int(date_1_str[:4]), int(date_1_str[4:6]), int(date_1_str[6:8]))
-                        date_2 = datetime.date(int(date_2_str[:4]), int(date_2_str[4:6]), int(date_2_str[6:8]))
-                        if type_file == FunctionStateGetValue.year_file and date_2 - date_1 > datetime.timedelta(7):
-                            file_name = f'{path}/{item}'
-                        else:
-                            if type_file == FunctionStateGetValue.week_file and date_2 - date_1 < datetime.timedelta(7) and \
-                                    date_1 <= required_date <= date_2:
+    try:
+        file_name = ''
+        if type_file == FunctionStateGetValue.basic_file:
+            file_name = f'{path}/{data_file_0_type_name}'
+        else:
+            if type_file == FunctionStateGetValue.year_file or type_file == FunctionStateGetValue.week_file:
+                file_names = listdir(path)
+                for item in file_names:
+                    if '.csv' in item:
+                        if f'{required_date.year}' in item:
+                            date_1_str = item.split('_')[0]
+                            date_2_str = item.split('_')[1].split('.')[0]
+                            date_1 = datetime.date(int(date_1_str[:4]), int(date_1_str[4:6]), int(date_1_str[6:8]))
+                            date_2 = datetime.date(int(date_2_str[:4]), int(date_2_str[4:6]), int(date_2_str[6:8]))
+                            if type_file == FunctionStateGetValue.year_file and date_2 - date_1 > datetime.timedelta(7):
                                 file_name = f'{path}/{item}'
-    if file_name == '':
+                            else:
+                                if type_file == FunctionStateGetValue.week_file and date_2 - date_1 < datetime.timedelta(7) and \
+                                        date_1 <= required_date <= date_2:
+                                    file_name = f'{path}/{item}'
+        if file_name == '':
+            return None
+        data_list = read_file(file_name)
+        for obj in data_list:
+            if required_date == obj['date']:
+                return obj['value']
         return None
-    data_list = read_file(file_name)
-    for obj in data_list:
-        if required_date == obj['date']:
-            return obj['value']
-    return None
+    except OSError as error:
+        raise error
 
 
 def read_dates_only_or_values_only_file(file_name: str, type_file: FunctionStateGetValue) -> list:
@@ -75,7 +77,7 @@ def read_dates_only_or_values_only_file(file_name: str, type_file: FunctionState
                         data.append(tmp_value)
             return data
     except OSError as error:
-        logging.error(f'Ошибка, не удалось открыть файл: {error}')
+        raise error
 
 
 def get_value_from_dates_only_and_values_only_files(required_date: datetime, data_file_name_1: str = 'X.csv',
@@ -87,13 +89,16 @@ def get_value_from_dates_only_and_values_only_files(required_date: datetime, dat
     data_file_name_1 - имя файла с датами(или путь)
     data_file_name_2 - имя файла с данными(или путь)
     """
-    data_list_x = read_dates_only_or_values_only_file(data_file_name_1, FunctionStateGetValue.dates_only_file)
-    data_list_y = read_dates_only_or_values_only_file(data_file_name_2, FunctionStateGetValue.values_only_file)
-    if required_date in data_list_x:
-        required_index = data_list_x.index(required_date)
-        return data_list_y[required_index]
-    else:
-        return None
+    try:
+        data_list_x = read_dates_only_or_values_only_file(data_file_name_1, FunctionStateGetValue.dates_only_file)
+        data_list_y = read_dates_only_or_values_only_file(data_file_name_2, FunctionStateGetValue.values_only_file)
+        if required_date in data_list_x:
+            required_index = data_list_x.index(required_date)
+            return data_list_y[required_index]
+        else:
+            return None
+    except OSError as error:
+        raise error
 
 
 def next(counter: int, data_file_name: str = 'data_file.csv') -> (datetime, float):
