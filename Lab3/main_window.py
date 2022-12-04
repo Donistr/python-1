@@ -102,9 +102,24 @@ class MainWindow(QMainWindow):
         h_box.addLayout(v_box_4)
         h_box.addStretch(1)
         default_data_copy_button.clicked.connect(self.copy_default_dataset)
-        partition_data_two_files_button.clicked.connect(lambda: self.process_default_dataset(FunctionStateForGUI.dates_and_values_dataset, 'Выберите папку в которой будет создан датасет разделённый на 2 файла'))
-        partition_data_n_files_years_button.clicked.connect(lambda: self.process_default_dataset(FunctionStateForGUI.years_dataset, 'Выберите папку в которой будет создан датасет разделённый на n файлов по годам'))
-        partition_data_n_files_weeks_button.clicked.connect(lambda: self.process_default_dataset(FunctionStateForGUI.weeks_dataset, 'Выберите папку в которой будет создан датасет разделённый на n файлов по неделям'))
+        partition_data_two_files_button.clicked.connect(lambda: self.process_default_dataset(FunctionStateForGUI.dates_and_values_dataset, 'Выберите '
+                                                                                                                                           'папку в '
+                                                                                                                                           'которой будет'
+                                                                                                                                           ' создан датасет'
+                                                                                                                                           ' разделённый на'
+                                                                                                                                           ' 2 файла'))
+        partition_data_n_files_years_button.clicked.connect(lambda: self.process_default_dataset(FunctionStateForGUI.years_dataset, 'Выберите папку '
+                                                                                                                                    'в которой будет'
+                                                                                                                                    ' создан датасет'
+                                                                                                                                    ' разделённый '
+                                                                                                                                    'на n файлов '
+                                                                                                                                    'по годам'))
+        partition_data_n_files_weeks_button.clicked.connect(lambda: self.process_default_dataset(FunctionStateForGUI.weeks_dataset, 'Выберите папку '
+                                                                                                                                    'в которой будет'
+                                                                                                                                    ' создан датасет'
+                                                                                                                                    ' разделённый на'
+                                                                                                                                    ' n файлов по'
+                                                                                                                                    ' неделям'))
         get_value_from_default_dataset_button.clicked.connect(lambda: self.get_value_from_dataset(FunctionStateForGUI.default_dataset))
         get_value_from_dataset_two_files_button.clicked.connect(lambda: self.get_value_from_dataset(FunctionStateForGUI.dates_and_values_dataset))
         get_value_from_dataset_n_files_years_button.clicked.connect(lambda: self.get_value_from_dataset(FunctionStateForGUI.years_dataset))
