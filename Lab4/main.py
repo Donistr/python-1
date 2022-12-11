@@ -2,6 +2,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import re
 from math import isnan
+import numpy as np
 
 
 def read_csv_to_dataframe(file_name: str = 'data_file.csv') -> pd.DataFrame:
@@ -98,9 +99,22 @@ def draw_exchange_rate(df: pd.DataFrame, draw: bool, title: str, x: str = 'date'
     :param y_label: название оси y
     :return: ничего не возвращает
     """
-    df.plot(x=x, y=y, kind='line', figsize=(15, 5))
+    array = list()
+    for i in range(len(df[x])):
+        array.append((df.iloc[i][x] - df.iloc[-1][x]).days)
+    x_data = np.array(array)
+    y_data = np.array(df[y])
+    y_min = min(y_data)
+    if y_min < 0:
+        for i in range(len(y_data)):
+            y_data[i] -= 2 * y_min
+    y_log_data = np.log(y_data)
+    curve = np.polyfit(x_data, y_log_data, 1)
+    y_final = np.exp(curve[1]) * np.exp(curve[0] * x_data)
+    plt.figure(figsize=(18, 5))
+    plt.plot(df[x], y_final)
     plt.xlabel(x_label)
-    plt.ylabel(y_label)
+    plt.ylabel(f'y=e^({curve[1]:.5f})*e^({curve[0]:.5f}*x)\n{curve[1]:.5f};{curve[0]:.5f}=polyfit(x,log({y_label}), 1)')
     plt.title(title)
     if draw:
         plt.show()
