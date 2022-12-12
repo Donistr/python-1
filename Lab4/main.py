@@ -87,7 +87,7 @@ def group_dataframe_months(df: pd.DataFrame) -> pd.DataFrame:
 
 
 def draw_exchange_rate(df: pd.DataFrame, draw: bool, title: str, x: str = 'date', y: str = 'value',
-                       x_label: str = 'date', y_label: str = 'value') -> None:
+                       exp_graphic: bool = False, x_label: str = 'date', y_label: str = 'value') -> None:
     """
     функция рисует график по датафрейму
     :param df: датафрейм
@@ -95,26 +95,17 @@ def draw_exchange_rate(df: pd.DataFrame, draw: bool, title: str, x: str = 'date'
     :param title: название графика
     :param x: название столбца датафрейма, который лежит по оси x
     :param y: название столбца датафрейма, который лежит по оси y
+    :param exp_graphic: параметр отвечает за то, отрисовывать график по оси y экспоненциально или нет
     :param x_label: название оси x
     :param y_label: название оси y
     :return: ничего не возвращает
     """
-    array = list()
-    for i in range(len(df[x])):
-        array.append((df.iloc[i][x] - df.iloc[-1][x]).days)
-    x_data = np.array(array)
-    y_data = np.array(df[y])
-    y_min = min(y_data)
-    if y_min < 0:
-        for i in range(len(y_data)):
-            y_data[i] -= 2 * y_min
-    y_log_data = np.log(y_data)
-    curve = np.polyfit(x_data, y_log_data, 1)
-    y_final = np.exp(curve[1]) * np.exp(curve[0] * x_data)
     plt.figure(figsize=(18, 5))
-    plt.plot(df[x], y_final)
+    plt.plot(df[x], df[y])
+    if exp_graphic:
+        plt.yscale('log')
     plt.xlabel(x_label)
-    plt.ylabel(f'y=e^({curve[1]:.5f})*e^({curve[0]:.5f}*x)\n{curve[1]:.5f};{curve[0]:.5f}=polyfit(x,log({y_label}), 1)')
+    plt.ylabel(y_label)
     plt.title(title)
     if draw:
         plt.show()
@@ -131,7 +122,7 @@ def draw_exchange_rate_month(df: pd.DataFrame, month: int, year: int) -> None:
     date_start = pd.Timestamp(year, month, 1)
     date_end = pd.Timestamp(year, month, date_start.days_in_month)
     df_filtered = filter_dataframe_date(df, date_start, date_end)
-    draw_exchange_rate(df_filtered, False, f'values to month {year}-{month:02d}', 'date')
+    draw_exchange_rate(df_filtered, False, f'values to month {year}-{month:02d}', 'date', 'value')
     draw_exchange_rate(df_filtered, False, f'median to month {year}-{month:02d}', 'date', 'deviation_median')
     draw_exchange_rate(df_filtered, False, f'average to month {year}-{month:02d}', 'date', 'deviation_average')
     plt.show()
@@ -149,5 +140,5 @@ if __name__ == "__main__":
     print('\n', df_filtered_date)
     df_grouped_month = group_dataframe_months(dataset_df)
     print('\n', df_grouped_month)
-    draw_exchange_rate(dataset_df, True, 'ruble to dollar exchange rate(all time)')
+    draw_exchange_rate(dataset_df, True, 'ruble to dollar exchange rate(all time)', 'date', 'value', True)
     draw_exchange_rate_month(dataset_df, 9, 2022)
